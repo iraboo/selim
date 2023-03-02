@@ -6,10 +6,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
 import chromedriver_autoinstaller
-import pyautogui
 import time
 import requests
-from bs4 import BeautifulSoup
 import openpyxl
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
