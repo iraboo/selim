@@ -10,7 +10,7 @@ import openpyxl
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 
-current_folder = 'C:/Users/iraboo/Documents/my_project/selim/'
+current_folder = 'D:/PC-Documents/my_project/selim/'
 chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0]  #크롬드라이버 버전 확인
 chrome_file = current_folder + chrome_ver + '/chromedriver'
 
@@ -68,7 +68,7 @@ p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[7]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[8]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[11]/td')).text)
-p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[15]/td')).text)
+p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[14]/td')).text)
 
 for i in p:
     e_price.append(int(i.replace(',','').replace('원','')))
