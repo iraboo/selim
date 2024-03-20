@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+import requests
 import chromedriver_autoinstaller
 import time
 import openpyxl
@@ -21,6 +21,7 @@ options.add_argument('--ignore-ssl-errors')
 #options.add_argument('headless')    # 크롬을 백그라운드에서 실행
 options.add_argument( "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) \
     AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")     # 봇으로 인식하지 않게끔 설정
+
 ser = Service(chrome_file)
 
 try:
@@ -58,7 +59,7 @@ time.sleep(1)
 element = browser.find_elements(By.ID, 'bill_f')
 browser.switch_to.frame(element[-1])
 
-e_price = []    #[기본요금,전력량요금,기후환경요금,연료비조정액,역률요금,자동납부할인할인,인터넷할인,전력기금,청구요금]
+e_price = []    #[기본요금,전력량요금,기후환경요금,연료비조정액,역률요금,인터넷빌링할인,전력기금,청구요금]
 p = []
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[1]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[2]/td')).text)
@@ -66,8 +67,7 @@ p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[4]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[5]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[7]/td')).text)
-p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[8]/td')).text)
-p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[11]/td')).text)
+p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[10]/td')).text)
 p.append((browser.find_element(By.XPATH, '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[14]/td')).text)
 
 for i in p:
@@ -131,7 +131,7 @@ filename = current_folder + '자동조회.xlsx'
 wb = Workbook()
 sheet = wb.active
 
-sheet.append(['기본요금','전력량요금','기후환경요금','연료비조정액','역률요금','자동납부할인','인터넷할인','전력기금','청구요금'])
+sheet.append(['기본요금','전력량요금','기후환경요금','연료비조정액','역률요금','인터넷빌링할인','전력기금','청구요금'])
 sheet.append(e_price)
 sheet.append(['상수도요금','하수도요금','물이용부담금','수도요금합계'])
 sheet.append(w_price)
