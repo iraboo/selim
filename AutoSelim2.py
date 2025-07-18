@@ -23,7 +23,7 @@ E_CELLS = {
     '기본요금': 'E4',
     '사용요금합계': 'F4',
     '역률요금': 'G4', # 음수(-)로 들어감
-    '청구요금': 'C5'
+    '전력기금': 'C5'
 }
 
 # 수도요금 데이터가 들어갈 셀 주소
@@ -84,15 +84,17 @@ def get_bill_data(driver, wait):
         '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[3]/td', # 기후환경요금
         '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[4]/td', # 연료비조정액
         '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[5]/td', # 지상역률료
-        '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[12]/td' # 청구요금
+        '/html/body/div[3]/table/tbody/tr[1]/td[1]/table[1]/tbody/tr[9]/td' # 전력기금
     ]
     e_price_raw = [int(wait.until(EC.presence_of_element_located((By.XPATH, xp))).text.replace(',', '').replace('원', '')) for xp in price_xpaths]
     e_price = {
         '기본요금': e_price_raw[0],
         '사용요금합계': e_price_raw[1] + e_price_raw[2] + e_price_raw[3],
         '역률요금': e_price_raw[4],
-        '청구요금': e_price_raw[5]
+        '전력기금': e_price_raw[5]
     }
+    
+    # 스크린샷 저장
     e_screenshot_path = config.WORKING_DIRECTORY + '전기요금.png'
     wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[3]'))).screenshot(e_screenshot_path)
     print("전기요금 정보 추출 완료.")
@@ -112,6 +114,8 @@ def get_bill_data(driver, wait):
         '물이용부담금': '//*[@id="trList"]/td[8]'
     }
     w_price = {key: int(wait.until(EC.presence_of_element_located((By.XPATH, xp))).text.replace(',', '')) for key, xp in w_price_xpaths.items()}
+    
+    # 스크린샷 저장
     w_screenshot_path = config.WORKING_DIRECTORY + '수도요금.png'
     wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="Sub_Cont_content"]'))).screenshot(w_screenshot_path)
     print("수도요금 정보 추출 완료.")
@@ -134,13 +138,14 @@ def update_monthly_report(e_price, w_price, e_img_path, w_img_path):
         data_sheet[E_CELLS['기본요금']].value = e_price['기본요금']
         data_sheet[E_CELLS['사용요금합계']].value = e_price['사용요금합계']
         data_sheet[E_CELLS['역률요금']].value = -e_price['역률요금'] # 음수로 입력
-        data_sheet[E_CELLS['청구요금']].value = e_price['청구요금']
+        data_sheet[E_CELLS['전력기금']].value = e_price['전력기금']
         
         data_sheet[W_CELLS['상수도요금']].value = w_price['상수도요금']
         data_sheet[W_CELLS['하수도요금']].value = w_price['하수도요금']
         data_sheet[W_CELLS['물이용부담금']].value = w_price['물이용부담금']
+        wb.save(filepath)
         print("데이터 시트 업데이트 완료.")
-
+        
         # 2. 이미지 시트 업데이트 (효율적으로 처리)
         img1 = Image(e_img_path)
         img1.height = 200
@@ -149,18 +154,21 @@ def update_monthly_report(e_price, w_price, e_img_path, w_img_path):
         img2 = Image(w_img_path)
         img2.height = 200
         img2.width = 320
-
+        
+        # 이미지가 들어갈 시트들에 대해 반복, 각 시트에 대해 이미지 제거 및 추가
         for i in IMAGE_SHEET_INDICES:
+            wb = openpyxl.load_workbook(filepath)
             sheet = wb[ws_list[i]]
             # 기존 이미지 모두 제거 (더 안정적인 방법)
             sheet._images = []
             # 새 이미지 추가
             sheet.add_image(img1, IMAGE_CELLS['전기'])
             sheet.add_image(img2, IMAGE_CELLS['수도'])
+            wb.save(filepath)
+        
         print("이미지 시트 업데이트 완료.")
-
-        # 3. 파일 한 번만 저장
-        wb.save(filepath)
+        # 엑셀 파일 닫기        
+        wb.close()
         print(f"성공적으로 '{filepath}' 파일을 저장했습니다.")
 
     except FileNotFoundError:
